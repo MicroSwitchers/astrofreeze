@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroFreeze</title>
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --text-color: #e0e0e0;
+            --input-bg: #16213e;
+            --input-border: #0f3460;
+            --button-bg: #e94560;
+            --button-hover: #ff6b6b;
+            --output-bg: #1f4068;
+            --iso-button-bg: #e94560;
+            --iso-button-hover: #ff6b6b;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--button-bg);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        p.subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: -10px;
+            color: var(--text-color);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--button-bg);
+            font-size: 1.8em;
+            margin-top: 30px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input::placeholder {
+            color: #7a7a7a;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 25px;
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--button-hover);
+        }
+
+        .iso-button {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 10px 5px;
+            background-color: var(--iso-button-bg);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .iso-button:hover {
+            background-color: var(--iso-button-hover);
+        }
+
+        #output {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--output-bg);
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 2px solid var(--input-border);
+            box-sizing: border-box;
+        }
+
+        #output h2 {
+            color: var(--button-bg);
+            margin-top: 0;
+        }
+
+        #output p {
+            margin: 10px 0;
+        }
+
+        /* Style for input values list */
+        #output ul {
+            background-color: var(--input-bg);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 0; /* Ensure the list fits within the box */
+            list-style-position: inside; /* Ensure bullets are inside the padding */
+        }
+
+        #output ul li {
+            margin-left: 20px; /* Ensure proper indentation for bullet points */
+        }
+
+        /* Style for calculated shutter speed */
+        #shutterSpeedOutput {
+            background-color: var(--input-bg);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+
+        .info {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+        }
+    </style>  
+</head>
+<body>
+    <h1>AstroFreeze</h1>
+    <p class="subtitle">Star Trail Reducing Calculator</p>
+    
+    <p class="info">This calculator uses the NPF rule for more accurate astrophotography settings. Please enter your camera and lens details below.</p>
+
+    <label for="focalLength">Focal Length (mm):</label>
+    <input type="number" id="focalLength" name="focalLength" placeholder="e.g., 24" min="1" max="2000" required>
+    <p class="info">The focal length of your lens in millimeters.</p>
+    
+    <label for="cropFactor">Crop Factor:</label>
+    <input type="number" id="cropFactor" name="cropFactor" placeholder="e.g., 1.5 for APS-C" step="0.1" min="1" max="2" value="1">
+    <p class="info">Enter the crop factor for your sensor (1 for full-frame, 1.5 for APS-C, etc.).</p>
+    
+    <label for="aperture">Aperture (f-number):</label>
+    <input type="number" id="aperture" name="aperture" placeholder="e.g., 2.8" step="0.1" min="1" max="32" required>
+    <p class="info">The f-number of your lens (e.g., 2.8 for f/2.8).</p>
+
+    <label for="pixelPitch">Pixel Pitch (µm):</label>
+    <input type="number" id="pixelPitch" name="pixelPitch" placeholder="e.g., 5.95" step="0.01" min="1" max="20" required>
+    <p class="info">The pixel pitch of your camera's sensor in micrometers. You can usually find this in your camera's specifications or by searching online.</p>
+
+    <label for="declination">Declination (degrees):</label>
+    <input type="number" id="declination" name="declination" placeholder="e.g., 45" step="1" min="-90" max="90" required>
+    <p class="info">
+        The declination of the celestial object you're photographing. <br>
+        Use 90° for Polaris, 0° for celestial equator, or a value in between. <br>
+        <button id="declinationHelp" style="background-color: var(--button-bg); color: white; border: none; border-radius: 5px; cursor: pointer;">Need Help Estimating?</button>
+    </p>
+
+    <div id="declinationHelpBox" style="display: none; background-color: var(--output-bg); padding: 10px; border-radius: 5px; margin-top: 10px;">
+        <h3>How to Estimate Declination</h3>
+        <p><strong>Use a Star Map:</strong> Try a star map app like Stellarium to find the declination of your target.</p>
+        <p><strong>Quick Estimate:</strong> 
+            - Polaris: +90° <br>
+            - Celestial Equator: 0° <br>
+            - Southern Hemisphere Celestial Pole: -90°
+        </p>
+        <p><strong>Estimate Based on Latitude:</strong> 
+            - Your latitude can help estimate the declination. If you are at 40° N, a target near Polaris would have a declination around +50°.
+        </p>
+    </div>
+    
+    <label for="environment">Shooting Environment:</label>
+    <select id="environment" required>
+        <option value="darkSky" selected>Dark Sky</option>
+        <option value="suburban">Suburban</option>
+        <option value="urban">Urban</option>
+    </select>
+    <p class="info">Select the type of environment you're shooting in to adjust ISO recommendations.</p>
+    
+    <button id="calculateButton">Calculate</button>
+    
+    <div id="output"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function calculateShutterSpeed(focalLength, cropFactor, aperture, pixelPitch, declination, selectedISO, npf) {
+                // Adjust focal length for crop factor
+                const adjustedFocalLength = focalLength * cropFactor;
+
+                // Recalculate the shutter speed based on the selected ISO and NPF rule
+                let shutterSpeed = npf / (1.15 * Math.cos(declination * Math.PI / 180));
+                shutterSpeed = shutterSpeed * (1600 / selectedISO); // Adjusting based on selected ISO
+                return Math.round(shutterSpeed * 10) / 10; // Round to 1 decimal place
+            }
+
+            function displayShutterSpeed(seconds) {
+                if (seconds >= 60) {
+                    const minutes = Math.floor(seconds / 60);
+                    const remainingSeconds = Math.round(seconds % 60);
+                    return `${minutes} minutes ${remainingSeconds} seconds`;
+                } else {
+                    return `${seconds} seconds`;
+                }
+            }
+
+            function calculateSettings() {
+                const focalLength = parseFloat(document.getElementById('focalLength').value);
+                const cropFactor = parseFloat(document.getElementById('cropFactor').value) || 1;
+                const aperture = parseFloat(document.getElementById('aperture').value);
+                const pixelPitch = parseFloat(document.getElementById('pixelPitch').value);
+                const declination = parseFloat(document.getElementById('declination').value);
+                const environment = document.getElementById('environment').value;
+
+                if (!focalLength || !aperture || !pixelPitch || isNaN(declination)) {
+                    alert("Please fill in all fields with valid numbers.");
+                    return;
+                }
+
+                // NPF rule calculation with refined coefficients
+                const npf = (40 * aperture + 30 * pixelPitch) / (focalLength * pixelPitch);
+
+                let isoOptions;
+                switch (environment) {
+                    case 'darkSky':
+                        isoOptions = [3200, 1600, 800];
+                        break;
+                    case 'suburban':
+                        isoOptions = [1600, 800, 400];
+                        break;
+                    case 'urban':
+                        isoOptions = [800, 400, 200];
+                        break;
+                    default:
+                        isoOptions = [1600, 800, 400];
+                }
+
+                const output = document.getElementById('output');
+                output.innerHTML = `
+                    <h2>Recommended Settings:</h2>
+                    <p><strong>Input Values:</strong></p>
+                    <ul>
+                        <li>Focal Length: ${focalLength} mm</li>
+                        <li>Aperture: f/${aperture}</li>
+                        <li>Pixel Pitch: ${pixelPitch} µm</li>
+                        <li>Declination: ${declination}°</li>
+                        <li>Environment: ${environment}</li>
+                    </ul>
+                    <p><strong>Choose an ISO setting to calculate shutter speed:</strong></p>
+                    <button class="iso-button" id="highISO">High ISO: ${isoOptions[0]}</button>
+                    <button class="iso-button" id="moderateISO">Moderate ISO: ${isoOptions[1]}</button>
+                    <button class="iso-button" id="lowISO">Low ISO: ${isoOptions[2]}</button>
+                    <div id="shutterSpeedOutput"></div>
+                    <p><strong>NPF Rule Explanation:</strong> The NPF rule calculates the maximum exposure time before star trails become visible. It takes into account your camera's pixel pitch, the focal length of your lens, and the declination of the object you're photographing. The formula used is:</p>
+                    <p>NPF = (40 * aperture + 30 * pixel pitch) / (focal length * pixel pitch)</p>
+                    <p>Shutter Speed = NPF / (1.15 * cos(declination))</p>
+                    <p>These settings are a starting point. You may need to adjust based on your specific equipment, conditions, and artistic vision. Experiment and have fun!</p>
+                `;
+
+                // Event listeners for ISO buttons
+                document.getElementById('highISO').addEventListener('click', function() {
+                    const shutterSpeed = calculateShutterSpeed(focalLength, cropFactor, aperture, pixelPitch, declination, isoOptions[0], npf);
+                    document.getElementById('shutterSpeedOutput').innerHTML = `<p><strong>Shutter Speed for ISO ${isoOptions[0]}:</strong> ${displayShutterSpeed(shutterSpeed)}</p>`;
+                });
+
+                document.getElementById('moderateISO').addEventListener('click', function() {
+                    const shutterSpeed = calculateShutterSpeed(focalLength, cropFactor, aperture, pixelPitch, declination, isoOptions[1], npf);
+                    document.getElementById('shutterSpeedOutput').innerHTML = `<p><strong>Shutter Speed for ISO ${isoOptions[1]}:</strong> ${displayShutterSpeed(shutterSpeed)}</p>`;
+                });
+
+                document.getElementById('lowISO').addEventListener('click', function() {
+                    const shutterSpeed = calculateShutterSpeed(focalLength, cropFactor, aperture, pixelPitch, declination, isoOptions[2], npf);
+                    document.getElementById('shutterSpeedOutput').innerHTML = `<p><strong>Shutter Speed for ISO ${isoOptions[2]}:</strong> ${displayShutterSpeed(shutterSpeed)}</p>`;
+                });
+            }
+
+            const calculateButton = document.getElementById('calculateButton');
+            if (calculateButton) {
+                calculateButton.addEventListener('click', calculateSettings);
+            } else {
+                console.error("Calculate button not found");
+            }
+
+            function validateInput(input, min, max) {
+                const value = parseFloat(input.value);
+                if (isNaN(value) || value < min || value > max) {
+                    input.setCustomValidity(`Please enter a number between ${min} and ${max}`);
+                    return false;
+                }
+                input.setCustomValidity('');
+                return true;
+            }
+
+            const inputs = ['focalLength', 'aperture', 'pixelPitch', 'declination', 'cropFactor'];
+            inputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('input', function() {
+                        validateInput(this, parseFloat(this.min), parseFloat(this.max));
+                    });
+                } else {
+                    console.error(`${inputId} input not found`);
+                }
+            });
+
+            // Toggle declination help box visibility
+            document.getElementById('declinationHelp').addEventListener('click', function() {
+                const helpBox = document.getElementById('declinationHelpBox');
+                helpBox.style.display = helpBox.style.display === 'none' ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
